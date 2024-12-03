@@ -6,3 +6,4 @@ We want to create two containers. One is the backend-api which impliments the nu
 
 Tim Lohninger k12141837
 Andreas Hofstadler k12224237
+Anna Kurzecka K11939589
