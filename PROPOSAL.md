@@ -37,13 +37,15 @@ K8s -->|Deploy| Backend[Backend]
 
 ### Frontend Service (Tim)
 - Implement a simple web interface using Kotlin and Ktor.
+- Create a Dockerfile to build the frontend service.
 - Use Github Actions to automate the CI/CD pipeline. 
 - - Build container image using the `Dockerfile`. 
 - - Push the container image to a container registry.
 
 
 ### Backend Service (Anna)
-- Implement a RESTful API using Python and FastAPI.
+- Implement a simple RESTful API using Python and FastAPI.
+- Create a Dockerfile to build the backend service.
 - Use Github Actions to automate the CI/CD pipeline.
 - - Build container image using the `Dockerfile`.
 - - Push the container image to a container registry.
@@ -51,6 +53,7 @@ K8s -->|Deploy| Backend[Backend]
 ### Kubernetes Deployment (Andi)
 The Kubernetes cluster is configured to deploy and manage the services using the provided YAML files:
 
+- Create a Repository for Kubernetes manifests.
 - Create a Kubernetes deployment for the frontend service.
 - Create a Kubernetes deployment for the backend service.
 - Create a Kubernetes service for the frontend and backend services.
@@ -72,6 +75,18 @@ The Kubernetes cluster is configured to deploy and manage the services using the
 - **Application Demo**:  
   - Upload an image through the frontend.  
   - Display face recognition results processed by the backend.  
+
+## Milestones
+  - Create the repositories and set up the initial project structure. **done**
+  - Implement the backend service with FastAPI. **done**
+  - Implement the frontend service with Ktor. **done**
+  - Create Dockerfiles for the backend services. **done**
+  - Create Dockerfiles for the frontend services. **done**
+  - Set up the CI/CD pipeline for the frontend services with GitHub Actions. (Tim)
+  - Set up the CI/CD pipeline for the backend  services with GitHub Actions. (Anna)
+  - Create the Kubernetes manifests for the frontend and backend services. (Andi)
+  - Set up the Kubernetes cluster on GKE. (Andi)
+  - Set up the CI/CD pipeline for the Kubernetes manifests with GitHub Actions. (Andi)
 
 ## Team Members
 
