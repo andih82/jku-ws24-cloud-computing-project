@@ -35,20 +35,20 @@ K8s -->|Deploy| Backend[Backend]
 
 ## Tasks
 
-### Frontend Service
+### Frontend Service (Tim)
 - Implement a simple web interface using Kotlin and Ktor.
 - Use Github Actions to automate the CI/CD pipeline. 
 - - Build container image using the `Dockerfile`. 
 - - Push the container image to a container registry.
 
 
-### Backend Service
+### Backend Service (Anna)
 - Implement a RESTful API using Python and FastAPI.
 - Use Github Actions to automate the CI/CD pipeline.
 - - Build container image using the `Dockerfile`.
 - - Push the container image to a container registry.
 
-### Kubernetes Deployment
+### Kubernetes Deployment (Andi)
 The Kubernetes cluster is configured to deploy and manage the services using the provided YAML files:
 
 - Create a Kubernetes deployment for the frontend service.
