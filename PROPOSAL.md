@@ -11,17 +11,54 @@ The focus of the project is on utilizing cloud computing tools like containeriza
 - **Backend**: Python with FastAPI for face recognition  
 - **Frontend**: Kotlin with Ktor for web interface  
 - **Containerization**: Docker  
-- **Orchestration**: Kubernetes   
+- **Orchestration**: Kubernetes with Google Kubernetes Engine (GKE)  
 - **CI/CD**: GitHub Actions  
+## Architecture Diagram
+
+```mermaid
+graph LR
+subgraph Repositories
+A[Frontend Repository] --> A1(CI/CD: GitHub Actions)
+B[Backend Repository] --> B1(CI/CD: GitHub Actions)
+O[Orchestration Repository] --> C1(CI/CD: GitHub Actions)
+end
+
+A1 --> CR[Container Registry]
+B1 --> CR
+
+C1 -->K8s[GKE Kubernetes Cluster]
+CR --> K8s
+
+K8s -->|Deploy| Frontend[Frontend]
+K8s -->|Deploy| Backend[Backend]
+```
 
 ## Tasks
 
-1. **Containerization**: Create Docker images for the backend and frontend services.  
-2. **CI/CD Pipeline**:  
-   - Set up GitHub workflows to trigger builds on code changes.  
-   - Automate image building and deployment to Kubernetes.  
-3. **Kubernetes Orchestration**:  
-   - Deploy and manage the containers using Kubernetes.  
+### Frontend Service (Tim)
+- Implement a simple web interface using Kotlin and Ktor.
+- Use Github Actions to automate the CI/CD pipeline. 
+- - Build container image using the `Dockerfile`. 
+- - Push the container image to a container registry.
+
+
+### Backend Service (Anna)
+- Implement a RESTful API using Python and FastAPI.
+- Use Github Actions to automate the CI/CD pipeline.
+- - Build container image using the `Dockerfile`.
+- - Push the container image to a container registry.
+
+### Kubernetes Deployment (Andi)
+The Kubernetes cluster is configured to deploy and manage the services using the provided YAML files:
+
+- Create a Kubernetes deployment for the frontend service.
+- Create a Kubernetes deployment for the backend service.
+- Create a Kubernetes service for the frontend and backend services.
+- Use Github Actions to apply the Kubernetes manifests to the cluster.
+- - Apply the deployment manifests.
+- - **Frontend** and **Backend** are deployed as separate microservices.
+- The cluster runs on **Google Kubernetes Engine (GKE)**.
+
 
 ## Demonstration
 
