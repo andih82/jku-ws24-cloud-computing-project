@@ -128,8 +128,114 @@ K8s -->|Update| F[Frontend Deployment]
 ```
 For development, the pipeline is triggered on push events to the `develop` branch. The pipeline builds the Docker images, pushes them to the Google Container Registry, and deploys them to the GKE cluster. The deployment is updated with the new image, ensuring the latest version is running in the cluster.
 
+### Actions
+```yaml
+name: Frontend CI/CD main
+
+on:
+push:
+tags:
+- 'v*.*.*'  # only when there are version tags like v1.0.1
+
+env:
+REGISTRY: ghcr.io
+IMAGE_NAME: ${{ github.repository }}
+PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+GAR_LOCATION: 'europe-central2'
+GKE_CLUSTER: 'autopilot-cluster-1'
+GKE_ZONE: 'europe-central2'
+WORKLOAD_IDENTITY_PROVIDER: 'projects/375220123351/locations/global/workloadIdentityPools/github/providers/my-repo'
+
+
+jobs:
+build-and-push:
+runs-on: ubuntu-latest
+permissions:
+contents: 'read'
+packages: 'write'
+id-token: 'write'
+
+    steps:
+      # Check repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
+
+      # Fetch all tags and get the latest tag or fall back to a default version
+      - name: Get latest tag or fallback
+        id: version
+        shell: bash
+        run: |
+          git fetch --tags
+          
+          # Get the latest tag from git, defaulting to v0.0.0 if no tags are found
+          latest_tag=$(git tag -l --sort=-creatordate | head -n 1 || echo "v0.0.0")
+          
+          echo "version=${latest_tag#v}" >> $GITHUB_OUTPUT
+
+      # Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Get the GKE credentials so we can deploy to the cluster
+      - name: 'Set up GKE credentials'
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          project_id: ${{ secrets.GKE_PROJECT }}
+          cluster_name: '${{ env.GKE_CLUSTER }}'
+          location: '${{ env.GKE_ZONE }}'
+
+      # Deploy the Docker image to the GKE cluster
+      - name: 'Deploy to GKE'
+        run: |-
+          kubectl config set-context --current --namespace=jku-clc-ws24
+          kubectl get pods
+          kubectl set image deployment/jku-clc-ws24-frontend jku-clc-ws24-frontend=ghcr.io/andih82/jku-clc-ws24-frontend:${{ steps.version.outputs.version }}
+          kubectl get pods
+```
+
 ### Backend CI/CD Pipeline
 Is configured in the same way as the frontend pipeline, but with different Docker images and deployment configurations.
+
+### Development Pipelines
+Are configured the same way as the main pipelines, but are triggered on push events to the `development` branch and pull requests to main branch.
+
+```yaml
+name: Frontend CI/CD Development
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - master
+```
 
 ### Notes
 - The pipline should be extended with tests to ensure the application is working correctly before deployment.
@@ -137,3 +243,11 @@ Is configured in the same way as the frontend pipeline, but with different Docke
 - The versioning of the Docker images is done using the Git tag, which is automatically created when a new version is pushed to the repository.
 - A rollback strategy should be implemented in case the deployment fails.
 - Relase tasks could be added to the pipeline to notify users of new deployments.
+
+## Lessons Learned
+- Kubernetes is a powerful tool for deploying and managing containerized applications.
+- CI/CD pipelines automate the deployment process and ensure consistency across environments.
+  - Difficulties in setting up the pipeline, especially with the GKE cluster and permissions.
+  - Deiciding on the right deployment strategy for the application, is not so easy.
+- Authentication and authorization are important aspects of securing the deployment and can be tricky to configure.
+- Plattform engeneering is a complex field that requires knowledge in many areas, such as networking, security, and continuous integration and deploment strategies.
