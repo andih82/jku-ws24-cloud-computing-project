@@ -238,7 +238,7 @@ on:
 ```
 
 ### Notes
-- The pipline should be extended with tests to ensure the application is working correctly before deployment.
+- The pipline, both in Frontent and Backend, includes already simple tests. Tests should be extended to cover all critical aspects of the application before deployment.
 - The pipeline can be extended with manual approval steps for production deployments.
 - The versioning of the Docker images is done using the Git tag, which is automatically created when a new version is pushed to the repository.
 - A rollback strategy should be implemented in case the deployment fails.
